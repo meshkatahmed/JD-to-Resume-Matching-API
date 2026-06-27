@@ -1,0 +1,15 @@
+Job Description: As an AI/ML Engineer at mPower, you will join our core engineering team to build, optimize, 
+and maintain production-ready machine learning solutions across our enterprise portfolio. Your work will focus on 
+expanding our core capabilities in Natural Language Processing (NLP), predictive modeling, and data-driven automation. 
+This role is ideal for a versatile engineer who thrives on solving complex language and structural data challenges in a 
+low-profile, high-impact commercial environment.
+
+Job Responsibilities:
+Fine-tune language and predictive models using custom datasets.
+Optimize algorithms to process mixed language unstructured data pipelines.
+Build and query graph-structured databases, relational networks, and vector repositories.
+Construct clean, automated backend pipelines for multi-modal inputs.
+Design, optimize, manage, secure bidirectional API to link AI/ML models with active enterprise solutions.
+Run regular audits using semantic scoring metrics to track factual consistency and prevent system hallucinations.
+Conduct technical stress testing to verify compliance.
+Conduct code reviews, provide constructive feedback and mentor junior team members.

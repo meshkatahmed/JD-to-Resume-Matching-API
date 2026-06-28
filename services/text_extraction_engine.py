@@ -1,6 +1,7 @@
 from typing import Set, Union
 from pathlib import Path
 import re
+from docx import Document
 
 class TextExtractionEngine:
     """
@@ -41,6 +42,9 @@ class TextExtractionEngine:
 
             if file_exists:
                 suffix = path.suffix.lower()
+                if suffix == ".docx":
+                    doc = Document(path)
+                    return "\n".join([paragraph.text for paragraph in doc.paragraphs])
                 if suffix == ".txt":
                     return path.read_text(encoding="utf-8", errors="ignore")
                 if suffix == ".pdf":

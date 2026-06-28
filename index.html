@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Matcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1a3a5c;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e7ef;
+            padding-bottom: 15px;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .upload-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e7ef;
+        }
+
+        .upload-box h3 {
+            color: #1a3a5c;
+            margin-bottom: 15px;
+        }
+
+        .upload-box input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px dashed #c0d0e0;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .upload-box input[type="file"]:hover {
+            border-color: #4a90d9;
+        }
+
+        .file-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: #eef2f7;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #1a3a5c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a5a8c;
+        }
+
+        .btn-primary:disabled {
+            background: #8a9aac;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-success:disabled {
+            background: #8a9aac;
+            cursor: not-allowed;
+        }
+
+        .match-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e7ef;
+        }
+
+        .match-section input {
+            padding: 10px;
+            border: 1px solid #d0d8e0;
+            border-radius: 4px;
+            width: 300px;
+            margin: 0 10px;
+        }
+
+        .match-section .btn {
+            margin-left: 10px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            display: block;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f0f4f8;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #d0d8e0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e7ef;
+        }
+
+        .status-empty {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+
+        .score-badge {
+            background: #d4edda;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: #155724;
+            font-weight: 500;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e7ef;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .cv-link {
+            color: #1a3a5c;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cv-link:hover {
+            color: #4a90d9;
+            text-decoration: underline;
+        }
+
+        .cv-link .external-icon {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-left: 3px;
+        }
+
+        .cv-link:hover .external-icon {
+            opacity: 1;
+        }
+
+        @media (max-width: 700px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+
+            .match-section input {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📄 CV Matcher</h1>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <!-- JD Upload -->
+            <div class="upload-box">
+                <h3>📋 Job Description (TXT/DOCX)</h3>
+                <input type="file" id="jdFileInput" accept=".txt,.docx">
+                <div id="jdFileInfo" class="file-info">No file selected</div>
+                <button id="uploadJdBtn" class="btn btn-primary">
+                    <span id="jdBtnText">📤 Upload JD</span>
+                </button>
+                <div id="jdMessage" class="message"></div>
+            </div>
+
+            <!-- CV Upload -->
+            <div class="upload-box">
+                <h3>👤 Resumes (PDF/TXT)</h3>
+                <input type="file" id="cvFileInput" accept=".pdf,.txt" multiple>
+                <div id="cvFileInfo" class="file-info">No files selected</div>
+                <button id="uploadCvBtn" class="btn btn-primary">
+                    <span id="cvBtnText">📤 Upload CVs</span>
+                </button>
+                <div id="cvMessage" class="message"></div>
+            </div>
+        </div>
+
+        <!-- Match Section -->
+        <div class="match-section">
+            <strong>🔍 Match CVs</strong>
+            <input type="text" id="jdNameInput" placeholder="Enter JD filename"
+                style="width: 300px;">
+            <button id="matchBtn" class="btn btn-success">
+                <span id="matchBtnText">⚡ Match</span>
+            </button>
+            <div id="matchMessage" class="message"></div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>CV Filename</th>
+                        <th>Match Score</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="4" class="status-empty">No matches yet. Upload files and click "Match".</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <span>📁 Files saved to: <code>job_descriptions/</code> and <code>cvs/</code></span>
+            <span style="float: right;">Click on CV filename to open in new tab ↗</span>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const jdInput = document.getElementById('jdFileInput');
+        const cvInput = document.getElementById('cvFileInput');
+        const jdFileInfo = document.getElementById('jdFileInfo');
+        const cvFileInfo = document.getElementById('cvFileInfo');
+        const uploadJdBtn = document.getElementById('uploadJdBtn');
+        const uploadCvBtn = document.getElementById('uploadCvBtn');
+        const jdBtnText = document.getElementById('jdBtnText');
+        const cvBtnText = document.getElementById('cvBtnText');
+        const jdMessage = document.getElementById('jdMessage');
+        const cvMessage = document.getElementById('cvMessage');
+        const matchBtn = document.getElementById('matchBtn');
+        const matchBtnText = document.getElementById('matchBtnText');
+        const matchMessage = document.getElementById('matchMessage');
+        const jdNameInput = document.getElementById('jdNameInput');
+        const tableBody = document.getElementById('tableBody');
+
+        // Update file info when files are selected
+        jdInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                jdFileInfo.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                // Auto-detect JD name without extension
+                const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+                jdNameInput.value = nameWithoutExt;
+                // jdNameInput.value = file.name
+            } else {
+                jdFileInfo.textContent = 'No file selected';
+            }
+        });
+
+        cvInput.addEventListener('change', function () {
+            const files = this.files;
+            if (files.length > 0) {
+                const totalSize = Array.from(files).reduce((sum, f) => sum + f.size, 0);
+                cvFileInfo.textContent = `📄 ${files.length} file(s) selected (${(totalSize / 1024).toFixed(1)} KB)`;
+            } else {
+                cvFileInfo.textContent = 'No files selected';
+            }
+        });
+
+        // Upload JD
+        uploadJdBtn.addEventListener('click', async function () {
+            const file = jdInput.files[0];
+            if (!file) {
+                showMessage(jdMessage, 'Please select a TXT file first.', 'error');
+                return;
+            }
+
+            // In uploadJD function
+            if (!file.name.endsWith('.txt') && !file.name.endsWith('.docx')) {
+                showMessage(jdMessage, 'Only .txt and .docx files are allowed.', 'error');
+                // showMessage(jdMessage, 'Only .txt files are allowed.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                uploadJdBtn.disabled = true;
+                jdBtnText.textContent = '⏳ Uploading...';
+                showMessage(jdMessage, 'Uploading...', 'info');
+
+                const response = await fetch('/upload_jd', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(jdMessage, `✅ ${result.message || 'Upload successful!'}`, 'success');
+                    // Auto-detect JD name without extension
+                    const nameWithoutExt = file.name
+                    // .replace(/\.[^/.]+$/, '');
+                    jdNameInput.value = nameWithoutExt;
+                } else {
+                    showMessage(jdMessage, `❌ ${result.detail || 'Upload failed'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(jdMessage, `❌ Error: ${error.message}`, 'error');
+            } finally {
+                uploadJdBtn.disabled = false;
+                jdBtnText.textContent = '📤 Upload JD';
+            }
+        });
+
+        // Upload CVs
+        uploadCvBtn.addEventListener('click', async function () {
+            const files = cvInput.files;
+            if (files.length === 0) {
+                showMessage(cvMessage, 'Please select at least one PDF or TXT file.', 'error');
+                return;
+            }
+
+            // Validate file types
+            for (let f of files) {
+                const ext = f.name.split('.').pop().toLowerCase();
+                if (!['pdf', 'txt'].includes(ext)) {
+                    showMessage(cvMessage, `❌ "${f.name}" is not allowed. Only PDF and TXT.`, 'error');
+                    return;
+                }
+            }
+
+            const formData = new FormData();
+            for (let f of files) {
+                formData.append('files', f);
+            }
+
+            try {
+                uploadCvBtn.disabled = true;
+                cvBtnText.textContent = '⏳ Uploading...';
+                showMessage(cvMessage, `Uploading ${files.length} file(s)...`, 'info');
+
+                const response = await fetch('/upload_cvs', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(cvMessage, `✅ ${result.message || 'Upload successful!'}`, 'success');
+                } else {
+                    showMessage(cvMessage, `❌ ${result.detail || 'Upload failed'}`, 'error');
+                }
+            } catch (error) {
+                showMessage(cvMessage, `❌ Error: ${error.message}`, 'error');
+            } finally {
+                uploadCvBtn.disabled = false;
+                cvBtnText.textContent = '📤 Upload CVs';
+            }
+        });
+
+        // Render table with clickable CV filenames that open in new tab
+        function renderTable(data) {
+            // Clear table
+            tableBody.innerHTML = '';
+
+            // If no data
+            if (!data) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="status-empty">No data received</td></tr>`;
+                return;
+            }
+
+            // Convert to array - handles your specific format
+            let items = [];
+
+            if (Array.isArray(data)) {
+                items = data;
+            } else if (typeof data === 'object' && data !== null) {
+                const keys = Object.keys(data);
+                const areNumericKeys = keys.every(key => !isNaN(parseInt(key)));
+
+                if (areNumericKeys) {
+                    items = keys.map(key => data[key]);
+                } else if (data.data && Array.isArray(data.data)) {
+                    items = data.data;
+                } else {
+                    items = keys.map(key => {
+                        const value = data[key];
+                        if (typeof value === 'object' && value !== null) {
+                            return value;
+                        } else {
+                            return { name: key, similarity_score: value };
+                        }
+                    });
+                }
+            }
+
+            if (!Array.isArray(items) || items.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="status-empty">No CVs found or empty response</td></tr>`;
+                return;
+            }
+
+            // Render each item with clickable filename that opens in new tab
+            let html = '';
+            items.forEach((item, index) => {
+                const filename = item.name || item.filename || item.cv_name || item.file || `CV_${index + 1}`;
+
+                let score = item.similarity_score || item.score || item.match_score || item.percentage || item.rating || '—';
+
+                if (typeof score === 'number') {
+                    score = (score * 100).toFixed(1) + '%';
+                } else if (typeof score === 'string') {
+                    if (!score.includes('%')) {
+                        const num = parseFloat(score);
+                        if (!isNaN(num)) {
+                            score = num + '%';
+                        }
+                    }
+                }
+
+                const details = item.details || item.note || item.description || item.extra || '';
+
+                // Determine file extension for icon
+                const ext = filename.split('.').pop().toLowerCase();
+                const icon = ext === 'pdf' ? '📄' : ext === 'txt' ? '📝' : '📎';
+
+                // Create link that opens in new tab
+                const cvUrl = `/cvs/${encodeURIComponent(filename)}`;
+
+                html += `<tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <a href="${cvUrl}" target="_blank" class="cv-link" title="Open ${filename} in new tab">
+                            ${icon} ${filename}
+                            <span class="external-icon">↗</span>
+                        </a>
+                    </td>
+                    <td><span class="score-badge">${score}</span></td>
+                    <td>${details}</td>
+                </tr>`;
+            });
+
+            tableBody.innerHTML = html;
+        }
+
+        // Helper: Show message
+        function showMessage(container, text, type = 'info') {
+            container.textContent = text;
+            container.className = `message ${type}`;
+            container.style.display = 'block';
+
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 10000);
+            }
+        }
+
+        // Match CVs
+        matchBtn.addEventListener('click', async function () {
+            let jdName = jdNameInput.value.trim();
+
+            if (!jdName) {
+                showMessage(matchMessage, 'Please enter a JD filename or upload a JD first.', 'error');
+                return;
+            }
+
+            // Remove extension if user added it
+            // jdName = jdName.replace(/\.[^/.]+$/, '');
+            jdNameInput.value = jdName;
+
+            // Add .txt extension for the API call
+            const jdFilename = jdName;  
+            const encoded = encodeURIComponent(jdFilename);
+            const url = `/match_cv/${encoded}`;
+
+            try {
+                matchBtn.disabled = true;
+                matchBtnText.textContent = '⏳ Matching...';
+                showMessage(matchMessage, '⏳ Matching CVs...', 'info');
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    let errMsg = `Server error (${response.status})`;
+                    try {
+                        const errData = await response.json();
+                        errMsg = errData.detail || errMsg;
+                    } catch (_) { }
+                    throw new Error(errMsg);
+                }
+
+                const data = await response.json();
+
+                // Render the table
+                renderTable(data);
+
+                // Count items
+                let count = 0;
+                if (Array.isArray(data)) {
+                    count = data.length;
+                } else if (typeof data === 'object' && data !== null) {
+                    count = Object.keys(data).length;
+                }
+
+                if (count > 0) {
+                    showMessage(matchMessage, `✅ Matched ${count} CV(s) successfully! Click on any CV filename to view in new tab.`, 'success');
+                } else {
+                    showMessage(matchMessage, `ℹ️ No CVs matched or no CVs found.`, 'info');
+                }
+            } catch (error) {
+                console.error('Match error:', error);
+                showMessage(matchMessage, `❌ ${error.message}`, 'error');
+            } finally {
+                matchBtn.disabled = false;
+                matchBtnText.textContent = '⚡ Match';
+            }
+        });
+
+        // Enter key on JD name input triggers match
+        jdNameInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                matchBtn.click();
+            }
+        });
+
+        // Auto-fill JD name from file selection
+        jdInput.addEventListener('change', function () {
+            if (this.files[0]) {
+                const nameWithoutExt = this.files[0].name
+                // .replace(/\.[^/.]+$/, '');
+                jdNameInput.value = nameWithoutExt;
+            }
+        });
+
+        console.log('✅ CV Matcher loaded successfully!');
+        console.log('💡 Click on any CV filename to open it in a new tab.');
+        console.log('🔍 JD name is auto-detected without extension.');
+    </script>
+</body>
+
+</html>

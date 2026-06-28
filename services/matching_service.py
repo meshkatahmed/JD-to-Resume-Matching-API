@@ -18,6 +18,7 @@ def compute_similarity_scores(jd_path: Path, cvs: List[Path]) -> List[Tuple[Path
     processing_engine = TextProcessingEngine()
 
     raw_jd = extraction_engine.extract(jd_path)
+    print(raw_jd)
     raw_cvs = [extraction_engine.extract(cv) for cv in cvs]
 
     jd_tokens = processing_engine.process(raw_jd)
@@ -37,8 +38,9 @@ def compute_similarity_scores(jd_path: Path, cvs: List[Path]) -> List[Tuple[Path
 
         jd_vector = [jd_counter[token] for token in master_list]
         cv_vector = [cv_counter[token] for token in master_list]
-
+        # print(jd_vector,cv_vector)
         similarity = calculate_cosine_similarity(jd_vector, cv_vector)
+        print(similarity)
         results.append((cv_path, similarity))
         
     return results

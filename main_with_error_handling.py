@@ -49,7 +49,7 @@ async def upload_cvs(files: list[UploadFile] = File(...)):
 @app.get("/match_cv/{job_ref_id}")
 def match_cv(job_ref_id: str):
     print("API Called",job_ref_id)
-    jd_path = Path(f"job_descriptions/{job_ref_id}")
+    jd_path = Path(f"job_descriptions/{job_ref_id}.docx")
     print(jd_path)
     if not jd_path.is_file():
         raise HTTPException(

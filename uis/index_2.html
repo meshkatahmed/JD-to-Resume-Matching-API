@@ -270,6 +270,60 @@
                 margin: 10px 0;
             }
         }
+
+        /* ---- Vectorization method toggle ---- */
+        .method-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .method-toggle-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a3a5c;
+            white-space: nowrap;
+        }
+
+        .method-toggle {
+            display: inline-flex;
+            background: #e0e7ef;
+            border-radius: 30px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .method-toggle button {
+            border: none;
+            background: transparent;
+            border-radius: 28px;
+            padding: 6px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #5a7a9c;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.02em;
+        }
+
+        .method-toggle button.active {
+            background: #1a3a5c;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(26, 58, 92, 0.18);
+        }
+
+        .method-toggle button:hover:not(.active) {
+            background: #c8d8ea;
+            color: #1a3a5c;
+        }
+
+        .method-hint {
+            font-size: 12px;
+            color: #7a90a4;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -311,6 +365,16 @@
                 <span id="matchBtnText">⚡ Match</span>
             </button>
             <div id="matchMessage" class="message"></div>
+
+            <!-- Vectorization method toggle -->
+            <div class="method-toggle-row">
+                <span class="method-toggle-label">Vectorization:</span>
+                <div class="method-toggle" id="methodToggle" role="group" aria-label="Vectorization method">
+                    <button id="methodCbow" class="active" data-method="cbow">CBOW</button>
+                    <button id="methodTfidf" data-method="tfidf">TF-IDF</button>
+                </div>
+                <span class="method-hint" id="methodHint">Raw term-count vectors</span>
+            </div>
         </div>
 
         <!-- Results Table -->
@@ -354,9 +418,23 @@
         const matchMessage = document.getElementById('matchMessage');
         const jdNameInput = document.getElementById('jdNameInput');
         const tableBody = document.getElementById('tableBody');
+        const methodToggle = document.getElementById('methodToggle');
+        const methodHint = document.getElementById('methodHint');
 
-        // Global Constants
-        const nameWithoutExt = jdNameInput.value; 
+        // Method hint labels
+        const METHOD_HINTS = {
+            cbow: 'Raw term-count vectors',
+            tfidf: 'Down-weights common words, boosts discriminative terms'
+        };
+
+        // Pill toggle — switch active state and update hint
+        methodToggle.addEventListener('click', function (e) {
+            const btn = e.target.closest('button[data-method]');
+            if (!btn) return;
+            methodToggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            methodHint.textContent = METHOD_HINTS[btn.dataset.method] || '';
+        });
 
         // Update file info when files are selected
         jdInput.addEventListener('change', function () {
@@ -599,7 +677,8 @@
 
             const jdFilename = jdName;  
             const encoded = encodeURIComponent(jdFilename);
-            const url = `/match_cv/${encoded}`;
+            const method = methodToggle.querySelector('button.active').dataset.method || 'cbow';
+            const url = `/match_cv/${encoded}?vectorization_method=${method}`;
 
             // Show loading state in table immediately
             showLoadingInTable('⏳ Matching CVs... Please wait');

@@ -1,8 +1,12 @@
+import re
 import shutil
+import math
 from pathlib import Path
+
 from fastapi import FastAPI, status, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+
 from services.matching_service import get_available_cvs, compute_similarity_scores
 
 # Initialize the FastAPI application
@@ -12,6 +16,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS configuration to allow requests from any origin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,46 +32,56 @@ JD_FOLDER.mkdir(exist_ok=True)
 CVS_FOLDER.mkdir(exist_ok=True)
 
 @app.get("/")
-def read_root():
-    return FileResponse('index.html')
+def read_ui():
+    return FileResponse('uis/index_2.html')
 
-@app.post("/upload_jd")
-async def upload_jd(file: UploadFile = File(...)):
-    # Save to job_descriptions folder
-    file_path = JD_FOLDER / file.filename
+@app.post("/upload_jd/{job_ref_id}")
+async def upload_jd(file: UploadFile = File(...), job_ref_id: str = None):
+    
+    # Save to job_ref_id folder
+    JD_JOB_REF_FOLDER = JD_FOLDER / job_ref_id
+    JD_JOB_REF_FOLDER.mkdir(exist_ok=True)
+    
+    file_path = JD_JOB_REF_FOLDER / file.filename
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
     return {"message": "JD saved"}
 
-@app.post("/upload_cvs")
-async def upload_cvs(files: list[UploadFile] = File(...)):
+@app.post("/upload_cvs/{job_ref_id}")
+async def upload_cvs(files: list[UploadFile] = File(...),job_ref_id: str = None):
+    
+    # Save to job_ref_id folder
+    CVS_JOB_REF_FOLDER = CVS_FOLDER / job_ref_id
+    CVS_JOB_REF_FOLDER.mkdir(exist_ok=True)
+
     for file in files:
-        file_path = CVS_FOLDER / file.filename
+        file_path = CVS_JOB_REF_FOLDER / file.filename
         with open(file_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
     return {"message": f"Saved {len(files)} CVs"}
 
 @app.get("/match_cv/{job_ref_id}")
 def match_cv(job_ref_id: str):
-    print("API Called",job_ref_id)
-    jd_path = Path(f"job_descriptions/{job_ref_id}")
-    print(jd_path)
+    job_ref_id_without_ext = re.sub(r'\.[^/.]+$', '', job_ref_id)
+    jd_path = JD_FOLDER / job_ref_id_without_ext / job_ref_id
+    
     if not jd_path.is_file():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail=f"Job description with reference ID '{job_ref_id}' not found."
         )
 
-    cvs = get_available_cvs()
-    if not cvs:
+    cv_paths = get_available_cvs(CVS_FOLDER / job_ref_id_without_ext)
+    
+    if not cv_paths:
         return {}
 
-    scores = compute_similarity_scores(jd_path, cvs)
+    scores = compute_similarity_scores(jd_path, cv_paths)
     scores.sort(key=lambda x: x[1], reverse=True)  # Sort by similarity score in descending order
     
     results = {}
     for i, (cv_path, similarity) in enumerate(scores):
-        similarity_percentage = f"{round(similarity * 100, 0)}%"
+        similarity_percentage = f"{math.ceil(similarity * 100)} %"
         results[str(i)] = {
             "name": cv_path.name,
             "similarity_score": similarity_percentage
@@ -74,9 +89,9 @@ def match_cv(job_ref_id: str):
 
     return results
 
-@app.get("/cvs/{filename}")
-async def get_cv(filename: str):
-    file_path = Path(f"cvs/{filename}")
+@app.get("/cvs/{job_ref_id}/{filename}")
+async def get_cv(job_ref_id: str, filename: str):
+    file_path = Path(CVS_FOLDER / job_ref_id / filename)
     if file_path.exists():
         return FileResponse(file_path)
     raise HTTPException(404, "CV not found")

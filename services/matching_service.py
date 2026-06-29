@@ -8,18 +8,19 @@ from utils import build_token_set, calculate_cosine_similarity
 def get_available_cvs(cvs_dir_path: str = "cvs") -> List[Path]:
     """Retrieve all supported CV files from the CVs directory."""
     cvs_dir = Path(cvs_dir_path)
+    print(cvs_dir)
     if not cvs_dir.exists():
         return []
     return [p for p in cvs_dir.iterdir() if p.is_file() and p.suffix.lower() in (".pdf", ".txt")]
 
-def compute_similarity_scores(jd_path: Path, cvs: List[Path]) -> List[Tuple[Path, float]]:
+def compute_similarity_scores(jd_path: Path, cv_paths: List[Path]) -> List[Tuple[Path, float]]:
     """Compute cosine similarity scores between a job description and a list of CVs."""
     extraction_engine = TextExtractionEngine()
     processing_engine = TextProcessingEngine()
 
     raw_jd = extraction_engine.extract(jd_path)
-    print(raw_jd)
-    raw_cvs = [extraction_engine.extract(cv) for cv in cvs]
+    
+    raw_cvs = [extraction_engine.extract(cv_path) for cv_path in cv_paths]
 
     jd_tokens = processing_engine.process(raw_jd)
     cv_tokens_list = [processing_engine.process(raw_cv) for raw_cv in raw_cvs]
@@ -31,16 +32,17 @@ def compute_similarity_scores(jd_path: Path, cvs: List[Path]) -> List[Tuple[Path
     jd_counter = Counter(jd_tokens)
 
     results = []
-    for i, cv_path in enumerate(cvs):
+    
+    for i, cv_path in enumerate(cv_paths):
         cv_tokens = cv_tokens_list[i]
         cv_counter = Counter(cv_tokens)
         master_list = sorted(list(master_token_sets[i]))
 
         jd_vector = [jd_counter[token] for token in master_list]
         cv_vector = [cv_counter[token] for token in master_list]
-        # print(jd_vector,cv_vector)
+        
         similarity = calculate_cosine_similarity(jd_vector, cv_vector)
-        print(similarity)
+        
         results.append((cv_path, similarity))
         
     return results

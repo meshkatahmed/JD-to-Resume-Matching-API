@@ -325,6 +325,9 @@
         const jdNameInput = document.getElementById('jdNameInput');
         const tableBody = document.getElementById('tableBody');
 
+        // Global Constants
+        const nameWithoutExt = jdNameInput.value; 
+
         // Update file info when files are selected
         jdInput.addEventListener('change', function () {
             const file = this.files[0];
@@ -372,7 +375,7 @@
                 jdBtnText.textContent = '⏳ Uploading...';
                 showMessage(jdMessage, 'Uploading...', 'info');
 
-                const response = await fetch('/upload_jd', {
+                const response = await fetch(`/upload_jd/${jdNameInput.value.replace(/\.[^/.]+$/, '')}`, {
                     method: 'POST',
                     body: formData
                 });
@@ -423,7 +426,7 @@
                 cvBtnText.textContent = '⏳ Uploading...';
                 showMessage(cvMessage, `Uploading ${files.length} file(s)...`, 'info');
 
-                const response = await fetch('/upload_cvs', {
+                const response = await fetch(`/upload_cvs/${jdNameInput.value.replace(/\.[^/.]+$/, '')}`, {
                     method: 'POST',
                     body: formData
                 });
@@ -509,7 +512,7 @@
                 const icon = ext === 'pdf' ? '📄' : ext === 'txt' ? '📝' : '📎';
 
                 // Create link that opens in new tab
-                const cvUrl = `/cvs/${encodeURIComponent(filename)}`;
+                const cvUrl = `/cvs/${jdNameInput.value.replace(/\.[^/.]+$/, '')}/${encodeURIComponent(filename)}`;
 
                 html += `<tr>
                     <td>${index + 1}</td>
@@ -549,11 +552,8 @@
                 return;
             }
 
-            // Remove extension if user added it
-            // jdName = jdName.replace(/\.[^/.]+$/, '');
             jdNameInput.value = jdName;
 
-            // Add .txt extension for the API call
             const jdFilename = jdName;  
             const encoded = encodeURIComponent(jdFilename);
             const url = `/match_cv/${encoded}`;
@@ -615,9 +615,8 @@
         // Auto-fill JD name from file selection
         jdInput.addEventListener('change', function () {
             if (this.files[0]) {
-                const nameWithoutExt = this.files[0].name
-                // .replace(/\.[^/.]+$/, '');
-                jdNameInput.value = nameWithoutExt;
+                const filename = this.files[0].name
+                jdNameInput.value = filename;
             }
         });
 

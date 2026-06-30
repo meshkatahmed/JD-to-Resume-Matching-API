@@ -98,7 +98,7 @@ def match_cv(job_ref_id: str, vectorization_method: str = "cbow"):
     
     results = {}
     for i, (cv_path, similarity) in enumerate(scores):
-        similarity_percentage = f"{math.ceil(similarity * 100)} %"
+        similarity_percentage = f"{round(similarity * 100)} %"
         results[str(i)] = {
             "name": cv_path.name,
             "similarity_score": similarity_percentage

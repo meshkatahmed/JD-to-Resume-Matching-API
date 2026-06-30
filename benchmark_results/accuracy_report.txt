@@ -1,0 +1,154 @@
+======================================================================
+  JD-to-Resume Matching API  —  Benchmark Report
+======================================================================
+
+  Method : JACCARD
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   43.32 pp
+    RMSE  (Root Mean Sq. Error)  :   47.18 pp
+    R²    (Variance Explained)   : -4.8027
+    Pearson r                    :  0.0607
+    Spearman ρ                   :  0.3092
+    Mean Bias (system - GT)      :  -32.76 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.20 %
+    Within ±5 pp                 :   1.29 %
+    Within ±10 pp                :   4.55 %
+    Within ±15 pp                :   7.91 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  46.49 %   (TP=65  FP=46  TN=405  FN=495)
+    Precision :  58.56 %
+    Recall    :  11.61 %
+    F1-Score  :  19.37 %
+
+  ------------------------------------------------------------------
+
+  Method : OVERLAP
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   30.66 pp
+    RMSE  (Root Mean Sq. Error)  :   35.32 pp
+    R²    (Variance Explained)   : -2.2523
+    Pearson r                    :  0.1998
+    Spearman ρ                   :  0.4023
+    Mean Bias (system - GT)      :  -19.47 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.69 %
+    Within ±5 pp                 :   6.82 %
+    Within ±10 pp                :  13.85 %
+    Within ±15 pp                :  21.56 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  47.38 %   (TP=74  FP=46  TN=405  FN=486)
+    Precision :  61.67 %
+    Recall    :  13.21 %
+    F1-Score  :  21.76 %
+
+  ------------------------------------------------------------------
+
+  Method : BM25
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   42.42 pp
+    RMSE  (Root Mean Sq. Error)  :   45.96 pp
+    R²    (Variance Explained)   : -4.5060
+    Pearson r                    :  0.1140
+    Spearman ρ                   :  0.4050
+    Mean Bias (system - GT)      :  -31.87 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.20 %
+    Within ±5 pp                 :   1.38 %
+    Within ±10 pp                :   3.96 %
+    Within ±15 pp                :   7.62 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  46.49 %   (TP=65  FP=46  TN=405  FN=495)
+    Precision :  58.56 %
+    Recall    :  11.61 %
+    F1-Score  :  19.37 %
+
+  ------------------------------------------------------------------
+
+  Method : CBOW
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   28.69 pp
+    RMSE  (Root Mean Sq. Error)  :   33.58 pp
+    R²    (Variance Explained)   : -1.9396
+    Pearson r                    :  0.2540
+    Spearman ρ                   :  0.4557
+    Mean Bias (system - GT)      :  -17.62 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.69 %
+    Within ±5 pp                 :   7.62 %
+    Within ±10 pp                :  16.02 %
+    Within ±15 pp                :  24.23 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  48.47 %   (TP=89  FP=50  TN=401  FN=471)
+    Precision :  64.03 %
+    Recall    :  15.89 %
+    F1-Score  :  25.46 %
+
+  ------------------------------------------------------------------
+
+  Method : TFIDF
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   35.96 pp
+    RMSE  (Root Mean Sq. Error)  :   39.85 pp
+    R²    (Variance Explained)   : -3.1386
+    Pearson r                    :  0.1889
+    Spearman ρ                   :  0.4594
+    Mean Bias (system - GT)      :  -25.36 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.30 %
+    Within ±5 pp                 :   2.57 %
+    Within ±10 pp                :   7.02 %
+    Within ±15 pp                :  13.16 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  46.79 %   (TP=68  FP=46  TN=405  FN=492)
+    Precision :  59.65 %
+    Recall    :  12.14 %
+    F1-Score  :  20.18 %
+
+  ------------------------------------------------------------------
+
+  Method : SBERT
+  Samples: 1011
+
+  ── Regression Metrics ──────────────────────────────────────────
+    MAE   (Mean Absolute Error)  :   20.16 pp
+    RMSE  (Root Mean Sq. Error)  :   26.64 pp
+    R²    (Variance Explained)   : -0.8502
+    Pearson r                    :  0.1763
+    Spearman ρ                   :  0.2604
+    Mean Bias (system - GT)      :   +2.56 pp
+
+  ── Tolerance-Based Accuracy ────────────────────────────────────
+    Exact Match (0 pp tolerance) :   0.99 %
+    Within ±5 pp                 :  18.40 %
+    Within ±10 pp                :  34.12 %
+    Within ±15 pp                :  49.55 %
+
+  ── Binary Classification (threshold=50.0%) ───────────────────
+    Accuracy  :  62.81 %   (TP=392  FP=208  TN=243  FN=168)
+    Precision :  65.33 %
+    Recall    :  70.00 %
+    F1-Score  :  67.59 %
+
+  ------------------------------------------------------------------
+======================================================================
